@@ -65,6 +65,7 @@ contract PerpetualLiquidatable is PerpetualPositionManager {
         bytes32 fundingRateIdentifier;
         FixedPoint.Unsigned minSponsorTokens;
         FixedPoint.Unsigned tokenScaling;
+        address excessTokenBeneficiary;
         // Params specifically for PerpetualLiquidatable.
         uint256 liquidationLiveness;
         FixedPoint.Unsigned collateralRequirement;
@@ -180,7 +181,8 @@ contract PerpetualLiquidatable is PerpetualPositionManager {
             params.minSponsorTokens,
             params.configStoreAddress,
             params.tokenScaling,
-            params.timerAddress
+            params.timerAddress,
+            params.excessTokenBeneficiary
         )
     {
         require(params.collateralRequirement.isGreaterThan(1), "CR is more than 100%");

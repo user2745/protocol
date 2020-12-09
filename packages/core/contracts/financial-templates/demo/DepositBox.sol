@@ -122,11 +122,12 @@ contract DepositBox is FeePayer, ContractCreator {
         address _collateralAddress,
         address _finderAddress,
         bytes32 _priceIdentifier,
-        address _timerAddress
+        address _timerAddress,
+        address _excessTokenBeneficiary
     )
         public
         ContractCreator(_finderAddress)
-        FeePayer(_collateralAddress, _finderAddress, _timerAddress)
+        FeePayer(_collateralAddress, _finderAddress, _timerAddress, _excessTokenBeneficiary)
         nonReentrant()
     {
         require(_getIdentifierWhitelist().isIdentifierSupported(_priceIdentifier), "Unsupported price identifier");

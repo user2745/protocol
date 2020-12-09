@@ -14,7 +14,8 @@ contract FundingRateApplierTest is FundingRateApplier {
         address _finderAddress,
         address _configStoreAddress,
         FixedPoint.Unsigned memory _tokenScaling,
-        address _timerAddress
+        address _timerAddress,
+        address _excessTokenBeneficiary
     )
         public
         FundingRateApplier(
@@ -23,7 +24,8 @@ contract FundingRateApplierTest is FundingRateApplier {
             _finderAddress,
             _configStoreAddress,
             _tokenScaling,
-            _timerAddress
+            _timerAddress,
+            _excessTokenBeneficiary
         )
     {}
 

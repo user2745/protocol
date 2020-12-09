@@ -85,9 +85,6 @@ contract PricelessPositionManager is FeePayer {
     // The expiry price pulled from the DVM.
     FixedPoint.Unsigned public expiryPrice;
 
-    // The excessTokenBeneficiary of any excess tokens added to the contract.
-    address public excessTokenBeneficiary;
-
     // Instance of FinancialProductLibrary to provide custom price and collateral requirement transformations to extend
     // the functionality of the EMP to support a wider range of financial products.
     FinancialProductLibrary public financialProductLibrary;
@@ -178,7 +175,7 @@ contract PricelessPositionManager is FeePayer {
         address _timerAddress,
         address _excessTokenBeneficiary,
         address _financialProductLibraryAddress
-    ) public FeePayer(_collateralAddress, _finderAddress, _timerAddress) nonReentrant() {
+    ) public FeePayer(_collateralAddress, _finderAddress, _timerAddress, _excessTokenBeneficiary) nonReentrant() {
         require(_expirationTimestamp > getCurrentTime());
         require(_getIdentifierWhitelist().isIdentifierSupported(_priceIdentifier));
 
@@ -187,7 +184,6 @@ contract PricelessPositionManager is FeePayer {
         tokenCurrency = ExpandedIERC20(_tokenAddress);
         minSponsorTokens = _minSponsorTokens;
         priceIdentifier = _priceIdentifier;
-        excessTokenBeneficiary = _excessTokenBeneficiary;
 
         // Initialize the financialProductLibrary at the provided address.
         financialProductLibrary = FinancialProductLibrary(_financialProductLibraryAddress);
@@ -619,25 +615,6 @@ contract PricelessPositionManager is FeePayer {
      */
     function remargin() external override onlyPreExpiration() nonReentrant() {
         return;
-    }
-
-    /**
-     * @notice Drains any excess balance of the provided ERC20 token to a pre-selected beneficiary.
-     * @dev This will drain down to the amount of tracked collateral and drain the full balance of any other token.
-     * @param token address of the ERC20 token whose excess balance should be drained.
-     */
-    function trimExcess(IERC20 token) external fees() nonReentrant() returns (FixedPoint.Unsigned memory amount) {
-        FixedPoint.Unsigned memory balance = FixedPoint.Unsigned(token.balanceOf(address(this)));
-
-        if (address(token) == address(collateralCurrency)) {
-            // If it is the collateral currency, send only the amount that the contract is not tracking.
-            // Note: this could be due to rounding error or balance-changing tokens, like aTokens.
-            amount = balance.sub(_pfc());
-        } else {
-            // If it's not the collateral currency, send the entire balance.
-            amount = balance;
-        }
-        token.safeTransfer(excessTokenBeneficiary, amount.rawValue);
     }
 
     /**

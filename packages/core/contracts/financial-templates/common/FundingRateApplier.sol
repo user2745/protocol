@@ -101,6 +101,7 @@ abstract contract FundingRateApplier is FeePayer {
      * @param _configStoreAddress address of the remote configuration store managed by an external owner.
      * @param _tokenScaling initial scaling to apply to the token value (i.e. scales the tracking index).
      * @param _timerAddress address of the timer contract in test envs, otherwise 0x0.
+     * @param _excessTokenBeneficiary Beneficiary to which all excess token balances that accrue in the contract can be sent.
      */
     constructor(
         bytes32 _fundingRateIdentifier,
@@ -108,8 +109,9 @@ abstract contract FundingRateApplier is FeePayer {
         address _finderAddress,
         address _configStoreAddress,
         FixedPoint.Unsigned memory _tokenScaling,
-        address _timerAddress
-    ) public FeePayer(_collateralAddress, _finderAddress, _timerAddress) {
+        address _timerAddress,
+        address _excessTokenBeneficiary
+    ) public FeePayer(_collateralAddress, _finderAddress, _timerAddress, _excessTokenBeneficiary) {
         uint256 currentTime = getCurrentTime();
         fundingRate.updateTime = currentTime;
         fundingRate.applicationTime = currentTime;

@@ -47,6 +47,9 @@ abstract contract FeePayer is AdministrateeInterface, Testable, Lockable {
     // If another 1% fee is charged, the multiplier should be 0.99^2 (0.9801).
     FixedPoint.Unsigned public cumulativeFeeMultiplier;
 
+    // The excessTokenBeneficiary of any excess tokens added to the contract.
+    address public excessTokenBeneficiary;
+
     /****************************************
      *                EVENTS                *
      ****************************************/
@@ -69,17 +72,20 @@ abstract contract FeePayer is AdministrateeInterface, Testable, Lockable {
      * @param _collateralAddress ERC20 token that is used as the underlying collateral for the synthetic.
      * @param _finderAddress UMA protocol Finder used to discover other protocol contracts.
      * @param _timerAddress Contract that stores the current time in a testing environment.
+     * @param _excessTokenBeneficiary Beneficiary to which all excess token balances that accrue in the contract can be sent.
      * Must be set to 0x0 for production environments that use live time.
      */
     constructor(
         address _collateralAddress,
         address _finderAddress,
-        address _timerAddress
+        address _timerAddress,
+        address _excessTokenBeneficiary
     ) public Testable(_timerAddress) {
         collateralCurrency = IERC20(_collateralAddress);
         finder = FinderInterface(_finderAddress);
         lastPaymentTime = getCurrentTime();
         cumulativeFeeMultiplier = FixedPoint.fromUnscaledUint(1);
+        excessTokenBeneficiary = _excessTokenBeneficiary;
     }
 
     /****************************************
@@ -159,12 +165,17 @@ abstract contract FeePayer is AdministrateeInterface, Testable, Lockable {
     }
 
     /**
-     * @notice Removes excess collateral balance not counted in the PfC by distributing it out pro-rata to all sponsors.
-     * @dev Multiplying the `cumulativeFeeMultiplier` by the ratio of non-PfC-collateral :: PfC-collateral effectively
-     * pays all sponsors a pro-rata portion of the excess collateral.
+     * @notice If `token` is the collateral currency, then it distribute it out pro-rata to all
+     * sponsors, otherwise drain its full balance and send to the `excessTokenBeneficiary`.
+     * @param token address of the ERC20 token whose excess balance should either be distributed amongst sponsors
+     * drained.
      */
-    function gulp() external nonReentrant() {
-        _gulp();
+    function gulp(IERC20 token) external nonReentrant() {
+        if (address(token) == address(collateralCurrency)) {
+            _gulp();
+        } else {
+            _trimExcess(token);
+        }
     }
 
     /****************************************
@@ -204,8 +215,16 @@ abstract contract FeePayer is AdministrateeInterface, Testable, Lockable {
         FixedPoint.Unsigned memory currentPfc = _pfc();
         FixedPoint.Unsigned memory currentBalance = FixedPoint.Unsigned(collateralCurrency.balanceOf(address(this)));
         if (currentPfc.isLessThan(currentBalance)) {
+            // Multiplying the `cumulativeFeeMultiplier` by the ratio of non-PfC-collateral :: PfC-collateral effectively
+            // pays all sponsors a pro-rata portion of the excess collateral.
             cumulativeFeeMultiplier = cumulativeFeeMultiplier.mul(currentBalance.div(currentPfc));
         }
+    }
+
+    function _trimExcess(IERC20 token) internal {
+        FixedPoint.Unsigned memory balance = FixedPoint.Unsigned(token.balanceOf(address(this)));
+        // Since this method will only be called if `token` !== `collateralCurrency`, then send its full balance.
+        token.safeTransfer(excessTokenBeneficiary, balance.rawValue);
     }
 
     function _pfc() internal view virtual returns (FixedPoint.Unsigned memory);

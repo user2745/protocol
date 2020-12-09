@@ -135,6 +135,7 @@ contract PerpetualPositionManager is FundingRateApplier {
      * @param _minSponsorTokens minimum amount of collateral that must exist at any time in a position.
      * @param _tokenScaling initial scaling to apply to the token value (i.e. scales the tracking index).
      * @param _timerAddress Contract that stores the current time in a testing environment. Set to 0x0 for production.
+     * @param _excessTokenBeneficiary Beneficiary to which all excess token balances that accrue in the contract can be sent.
      */
     constructor(
         uint256 _withdrawalLiveness,
@@ -146,7 +147,8 @@ contract PerpetualPositionManager is FundingRateApplier {
         FixedPoint.Unsigned memory _minSponsorTokens,
         address _configStoreAddress,
         FixedPoint.Unsigned memory _tokenScaling,
-        address _timerAddress
+        address _timerAddress,
+        address _excessTokenBeneficiary
     )
         public
         FundingRateApplier(
@@ -155,7 +157,8 @@ contract PerpetualPositionManager is FundingRateApplier {
             _finderAddress,
             _configStoreAddress,
             _tokenScaling,
-            _timerAddress
+            _timerAddress,
+            _excessTokenBeneficiary
         )
     {
         require(_getIdentifierWhitelist().isIdentifierSupported(_priceIdentifier), "Unsupported price identifier");
