@@ -60,30 +60,12 @@ async function runExport() {
   // Set phase length to one day.
   const secondsPerDay = "86400";
 
-  const newVoting = await Voting.new(
-    secondsPerDay,
-    gatPercentage,
-    inflationRate,
-    rewardsExpirationTimeout,
-    votingToken.address,
-    finder.address,
-    zeroAddress,
-    { from: proposerWallet }
-  );
+  const newVoting = await Voting.at("0x8B1631ab830d11531aE83725fDa4D86012eCCd77");
 
-  console.log("Deployed voting contract:\t", newVoting.address);
+  console.log("Deployed voting contract:\t");
 
   console.log("3. DEPLOYED VotingUpgrader.sol");
-  const votingUpgrader = await VotingUpgrader.new(
-    governor.address,
-    existingVoting.address,
-    newVoting.address,
-    finder.address,
-    proposerWallet, // Pass proposer wallet as the "migrated" address.
-    {
-      from: proposerWallet
-    }
-  );
+  const votingUpgrader = await VotingUpgrader.at("0xeb07cd1bb36514d4e6c0438ffad62cc96498723c");
 
   console.log("Deployed VotingUpgrader\t", votingUpgrader.address);
 
