@@ -133,6 +133,7 @@ class FundingRateProposer {
       this.logger.debug({
         at: "PerpetualProposer#updateFundingRate",
         message: "Proposal is already pending, cannot propose",
+        contractAddress,
         fundingRateIdentifier,
         proposalTime
       });
@@ -171,6 +172,7 @@ class FundingRateProposer {
       this.logger.error({
         at: "PerpetualProposer#updateFundingRate",
         message: "Potential proposed funding rate is outside allowed funding rate range",
+        contractAddress,
         fundingRateIdentifier,
         minFundingRate,
         maxFundingRate,
@@ -198,6 +200,7 @@ class FundingRateProposer {
       this.logger.debug({
         at: "PerpetualProposer#updateFundingRate",
         message: "Proposing new funding rate",
+        contractAddress,
         fundingRateIdentifier,
         requestTimestamp,
         proposedRate: offchainFundingRate,
@@ -240,6 +243,7 @@ class FundingRateProposer {
         this.logger.error({
           at: "PerpetualProposer#updateFundingRate",
           message,
+          contractAddress,
           fundingRateIdentifier,
           error
         });
@@ -249,6 +253,7 @@ class FundingRateProposer {
       this.logger.debug({
         at: "PerpetualProposer#updateFundingRate",
         message: "Skipping proposal because current rate is within allowed margin of error",
+        contractAddress,
         fundingRateIdentifier,
         proposedRate: offchainFundingRate,
         currentRate: onchainFundingRate,

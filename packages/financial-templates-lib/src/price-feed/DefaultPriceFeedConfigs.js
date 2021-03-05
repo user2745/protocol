@@ -42,6 +42,11 @@ const defaultConfigs = {
       { type: "cryptowatch", exchange: "kraken", pair: "ethusd" }
     ]
   },
+  ETHUSD: {
+    type: "expression",
+    lookback: 7200,
+    expression: "USDBTC / 10"
+  },
   USDBTC: {
     type: "medianizer",
     invertPrice: true,
