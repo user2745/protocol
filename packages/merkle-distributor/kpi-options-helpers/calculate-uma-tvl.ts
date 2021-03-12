@@ -2,7 +2,7 @@ import nodeFetch from "node-fetch";
 
 import { getAbi, getAddress } from "@uma/core";
 import { getWeb3, ConvertDecimals } from "@uma/common";
-const web3 = getWeb3();
+const web3 = getWeb3("mainnet_mnemonic");
 const { toWei, toBN, fromWei } = web3.utils;
 
 const fixedPointAdjustment = toBN(toWei("1"));
