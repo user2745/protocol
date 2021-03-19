@@ -82,7 +82,7 @@ async function main() {
 
   console.log("File passed the checks\n\n1. Adding claims file to IPFS 🛰");
 
-  const ipfsHash = await ipfsHelper.uploadFile(JSON.stringify(claimsObject.claims));
+  const ipfsHash = await ipfsHelper.uploadFile(JSON.stringify(claimsObject));
 
   console.log("Claims file added to IPFS with hash:", ipfsHash, "\n\n2. Pinning claims file to IPFS 📌");
 
