@@ -31,12 +31,14 @@ contract("KpiOptionsFinancialProductLibrary", function () {
     );
   });
   describe("price transformation", () => {
+    it("Library reverts if transformed price is not set", async () => {});
+
     it("Library returns 1 price if before expiration", async () => {
       // Calling the transformation function through the emp mock.
       assert.equal(
         (
           await expiringMultiParty.transformPrice(
-            { rawValue: toWei("1") },
+            { rawValue: toWei("0.2") },
             (await expiringMultiParty.getCurrentTime()).toString()
           )
         ).toString(),
@@ -47,7 +49,7 @@ contract("KpiOptionsFinancialProductLibrary", function () {
       assert.equal(
         (
           await expiringMultiParty.transformPrice.call(
-            { rawValue: toWei("1") },
+            { rawValue: toWei("0.2") },
             (await expiringMultiParty.getCurrentTime()).toString(),
             { from: expiringMultiParty.address }
           )
