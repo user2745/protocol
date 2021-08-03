@@ -93,7 +93,7 @@ async function getHistoricalPrice(callback) {
     const precisionToUse = UMIP_PRECISION[queryIdentifier] ? UMIP_PRECISION[queryIdentifier] : DEFAULT_PRECISION;
     console.log(`\n⚠️ Truncating price to ${precisionToUse} decimals (default: 18)`);
     const [predec, postdec] = fromWei(queryPrice.toString()).split(".");
-    const truncated = [predec, postdec.slice(0, precisionToUse)].join(".");
+    const truncated = postdec === undefined ? predec : [predec, postdec.slice(0, precisionToUse)].join(".");
     console.log(`\n💹 Median ${queryIdentifier} price @ ${queryTime} = ${truncated}`);
   } catch (err) {
     callback(err);
