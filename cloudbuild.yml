@@ -1,4 +1,6 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  timeout: 3600s
   args: ['build', '.']
+options:
+  machineType: 'N1_HIGHCPU_8'
+timeout: 660s
