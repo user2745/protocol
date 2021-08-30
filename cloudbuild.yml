@@ -3,4 +3,4 @@ steps:
   args: ['build', '.']
 options:
   machineType: 'N1_HIGHCPU_8'
-timeout: 660s
+timeout: 3600s
