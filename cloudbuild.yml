@@ -1,7 +1,7 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '-t', 'gcr.io/bots-dev-3909/protocol', '.']
+  args: ['build', '-t', 'gcr.io/bots-dev-5428/protocol', '.']
 options:
   machineType: 'N1_HIGHCPU_8'
 timeout: 3600s
-images: ['gcr.io/bots-dev-3909/protocol']
+images: ['gcr.io/bots-dev-5428/protocol']
