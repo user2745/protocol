@@ -1,6 +1,6 @@
 import assert from "assert";
 
-import type { State, Chain, Inputs, Request, Erc20Props, ChainConfig } from "../types/state";
+import type { State, Chain, Inputs, Request, Erc20Props, ChainConfig, Transaction } from "../types/state";
 import type { Signer, BigNumber } from "../types/ethers";
 
 // This is a typescript compatible way of pulling out values from the global state object, essentially
@@ -95,6 +95,17 @@ export default class Read {
     const request = this.request();
     const result = this.state?.services?.chains?.[chainId]?.erc20s?.[request.currency];
     assert(result, "Token not supported on chain " + chainId);
+    return result;
+  }
+  transactionService() {
+    const chainId = this.requestChainId();
+    const result = this.state?.services?.chains?.[chainId]?.transactionManager;
+    assert(result, "Transaction manager not found on chain: " + chainId);
+    return result;
+  }
+  getTransaction(id: string): Transaction {
+    const result = this.state?.transactions?.[id];
+    assert(result, "No transaction found with that id: " + id);
     return result;
   }
 }

@@ -1,5 +1,5 @@
-import { Signer, BigNumber } from "./ethers";
-import type { erc20, optimisticOracle } from "../services";
+import { Signer, BigNumber, TransactionRequest } from "./ethers";
+import type { erc20, optimisticOracle, transactions } from "../services";
 import type Multicall2 from "../../multicall2";
 import { Provider } from "./ethers";
 
@@ -8,6 +8,7 @@ export type ChainServices = {
   provider: Provider;
   erc20s: Record<string, erc20.Erc20>;
   optimisticOracle: optimisticOracle.OptimisticOracle;
+  transactionManager: transactions.Manager;
 };
 
 export type Services = {
@@ -19,6 +20,7 @@ export type ChainConfig = {
   multicall2Address?: string;
   optimisticOracleAddress: string;
   providerUrl: string;
+  confirmations?: number;
 };
 
 // config definition
@@ -85,6 +87,19 @@ export type Chain = {
   optimisticOracle: Partial<OptimisticOracle>;
 };
 
+export type Transaction = {
+  id: string;
+  request: TransactionRequest;
+  created: number;
+  signer: Signer;
+  state: "requested" | "submitted" | "confirmed" | "error";
+  chainId: number;
+  hash?: string;
+  error?: Error;
+};
+
+export type Transactions = Record<string, Transaction>;
+
 export type State = Partial<{
   error?: Error;
   inputs: Partial<Inputs>;
@@ -92,4 +107,5 @@ export type State = Partial<{
   chains: Record<number, Partial<Chain>>;
   config: Config;
   services: Services;
+  transactions?: Transactions;
 }>;
