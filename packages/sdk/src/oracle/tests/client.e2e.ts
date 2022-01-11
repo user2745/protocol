@@ -43,24 +43,21 @@ describe("Oracle Client", function () {
     client = factory(config, () => undefined);
     store = client.store;
   });
-  test("setRequest", function () {
+  test("setRequest", async function () {
     client.setActiveRequest(request);
+    await client.update();
     const input = store.read().inputRequest();
     assert.ok(input);
+    const fullRequest = store.read().request();
+    assert.ok(fullRequest);
   });
-  test("setUser", function () {
+  test("setUser", async function () {
     client.setUser(account, chainId, signer);
+    await client.update();
     const state = store.get();
     assert.ok(state.user);
     assert.equal(state.user.address, account);
     assert.equal(state.user.chainId, chainId);
-  });
-  test("update.all", async function () {
-    await client.update.all();
-    assert.ok(store.read().userCollateralBalance());
-    assert.ok(store.read().userCollateralAllowance());
-    assert.ok(store.read().collateralProps());
-    assert.ok(store.read().request());
   });
   test("previewProposal", function () {
     const result = client.previewProposal();

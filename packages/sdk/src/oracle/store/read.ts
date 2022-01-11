@@ -60,6 +60,16 @@ export default class Read {
     assert(request, "Request has not been fetched");
     return request;
   }
+  provider() {
+    const chainId = this.requestChainId();
+    const result = this.state?.services?.chains?.[chainId]?.provider;
+    assert(result, "Provider not found on chain:  " + result);
+    return result;
+  }
+  multicall2() {
+    const chainId = this.requestChainId();
+    return this.state?.services?.chains?.[chainId]?.multicall2;
+  }
   collateralProps(): Partial<Erc20Props> {
     const request = this.request();
     const chain = this.requestChain();
@@ -83,25 +93,6 @@ export default class Read {
     const allowance = chain?.erc20s?.[request.currency]?.allowances?.[oracle]?.[user];
     assert(allowance, "Allowance not set on user on collateral token for oracle");
     return allowance;
-  }
-  oracleService() {
-    const chainId = this.requestChainId();
-    const result = this.state?.services?.chains?.[chainId]?.optimisticOracle;
-    assert(result, "Optimistic Oracle Not found on chain " + chainId);
-    return result;
-  }
-  collateralService() {
-    const chainId = this.requestChainId();
-    const request = this.request();
-    const result = this.state?.services?.chains?.[chainId]?.erc20s?.[request.currency];
-    assert(result, "Token not supported on chain " + chainId);
-    return result;
-  }
-  transactionService() {
-    const chainId = this.requestChainId();
-    const result = this.state?.services?.chains?.[chainId]?.transactionManager;
-    assert(result, "Transaction manager not found on chain: " + chainId);
-    return result;
   }
   getTransaction(id: string): Transaction {
     const result = this.state?.transactions?.[id];

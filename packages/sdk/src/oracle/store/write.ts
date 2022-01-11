@@ -4,13 +4,6 @@ import { ethers } from "ethers";
 import type * as ethersTypes from "../types/ethers";
 import type * as state from "../types/state";
 
-import { factory as Erc20Factory } from "../services/erc20";
-import { OptimisticOracle as OptimisticOracleService } from "../services/optimisticOracle";
-import {
-  Manager as TransactionManager,
-  Emit as TransactionEmit,
-  Config as TransactionConfig,
-} from "../services/transactions";
 import Multicall2 from "../../multicall2";
 
 // This file contains composable and type safe state writers which mirror the state in types/state.
@@ -103,27 +96,11 @@ export class Services {
     if (this.state?.provider) return;
     this.state.provider = ethers.getDefaultProvider(providerUrl);
   }
-  erc20s(address: string): void {
-    assert(this.state.provider, "requires provider to be set");
-    if (!this.state?.erc20s) this.state.erc20s = {};
-    // only add this once
-    if (this.state?.erc20s[address]) return;
-    this.state.erc20s[address] = Erc20Factory(this.state.provider, address, this.state.multicall2);
-  }
-  optimisticOracle(address: string): void {
-    if (this.state.optimisticOracle) return;
-    assert(this.state.provider, "requires provider to be set");
-    this.state.optimisticOracle = new OptimisticOracleService(this.state.provider, address);
-  }
   multicall2(multicall2Address?: string) {
     if (!multicall2Address) return;
     if (this.state.multicall2) return;
     assert(this.state.provider, "requires provider to be set");
     this.state.multicall2 = new Multicall2(multicall2Address, this.state.provider);
-  }
-  transactionManager(config: TransactionConfig, cb: TransactionEmit) {
-    assert(this.state.provider, "requires provider to be set");
-    this.state.transactionManager = new TransactionManager(config, this.state.provider, cb);
   }
 }
 
@@ -157,9 +134,5 @@ export default class Write {
   }
   error(error?: Error): void {
     this.state.error = error;
-  }
-  transactions(transaction: state.Transaction): void {
-    if (!this.state.transactions) this.state.transactions = {};
-    this.state.transactions[transaction.id] = transaction;
   }
 }
